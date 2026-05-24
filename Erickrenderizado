@@ -1,0 +1,6 @@
+gcloud run deploy erick-renderizado \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars GEMINI_API_KEY=AIzaSyCZpJPT-ajJlQbReI2_Lqg2hwOr1Xn1kzo \
+  --memory 512Mi
