@@ -1,21 +1,20 @@
 import os
 import uuid
-import enved
+import io
+import base64
 from flask import Flask, render_template_string, request
 from PIL import Image, ImageDraw, ImageFont
 
-# CONFIGURACIÓN BÁSICA
 aplicacion = Flask(__name__)
 DIRECTORIO_RENDERS = "renderiza"
 os.makedirs(DIRECTORIO_RENDERS, exist_ok=True)
 
-# --- FUNCIÓN PARA GENERAR LA IMAGEN (FUNCIONA SIEMPRE) ---
+# FUNCIÓN QUE GENERA LA IMAGEN
 def generar_imagen(datos):
-    # Crear lienzo
     img = Image.new("RGB", (800, 600), color="#1a1a2e")
     dibujo = ImageDraw.Draw(img)
 
-    # Usar fuente que existe en todos los servidores
+    # Fuente que siempre funciona
     try:
         fuente = ImageFont.truetype("DejaVuSans.ttf", 14)
         fuente_titulo = ImageFont.truetype("DejaVuSans-Bold.ttf", 18)
@@ -28,8 +27,6 @@ def generar_imagen(datos):
     dibujo.text((20, 55), f"Cuartos: {datos.get('cuartos', '3')} | Baños: {datos.get('banos', '2')}", fill="#ffffff", font=fuente)
     dibujo.text((20, 80), f"Medidas: {datos.get('medidas', '20 metros x 20 metros')}", fill="#ffffff", font=fuente)
     dibujo.text((20, 105), f"Estilo: {datos.get('estilo', 'Moderno minimalista')} | Color: {datos.get('color', 'Azul')}", fill="#ffffff", font=fuente)
-    
-    # Marca de agua obligatoria para la muestra gratis
     dibujo.text((20, 570), "© MUESTRA CON MARCA DE AGUA", fill="#ff4757", font=fuente)
 
     # Convertir para mostrar en la página
@@ -39,7 +36,7 @@ def generar_imagen(datos):
     return base64.b64encode(buffer.getvalue()).decode()
 
 
-# --- TU PÁGINA WEB COMPLETA ---
+# PÁGINA WEB COMPLETA
 HTML = """<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -71,9 +68,7 @@ textarea { resize: vertical; min-height: 80px; }
 </style>
 </head>
 <body>
-<encabezado>
 <h1>✨ GENERAR RENDER GRATIS</h1>
-</encabezado>
 <div class="container">
 <div class="card">
 <h2>📝 Solicita tu render gratis</h2>
@@ -131,7 +126,6 @@ textarea { resize: vertical; min-height: 80px; }
 </form>
 </div>
 
-<!-- AQUÍ APARECE LA IMAGEN GENERADA -->
 <div id="resultado" {% if imagen_generada %} style="display:block;" {% endif %}>
 <div class="card">
 <h2>✅ TU MUESTRA LISTA</h2>
@@ -152,7 +146,7 @@ textarea { resize: vertical; min-height: 80px; }
 </html>
 """
 
-# --- RUTA PRINCIPAL ---
+# RUTA PRINCIPAL
 @aplicacion.route("/", methods=["GET", "POST"])
 def inicio():
     imagen_generada = None
@@ -169,3 +163,4 @@ def inicio():
 
 if __name__ == "__main__":
     aplicacion.run()
+    
